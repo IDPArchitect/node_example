@@ -8,7 +8,7 @@ on:
   workflow_dispatch:
 
 permissions:
-  contents: write   # Allow access to repository content
+  contents: write
   pull-requests: write
   issues: write
 
@@ -22,16 +22,9 @@ jobs:
 
     steps:
     - name: Checkout repository
-      uses: actions/checkout@v3
+      uses: actions/checkout@v4
       with:
-        token: ${{ secrets.GH_TOKEN }}  # Correct token usage
-
-    - name: Verify repository access
-      run: |
-        echo "Testing repository access..."
-        curl -H "Authorization: token ${{ secrets.GH_TOKEN }}" \
-             -H "Accept: application/vnd.github.v3+json" \
-             https://api.github.com/repos/${{ github.repository }}
+        token: ${{ secrets.GH_TOKEN }}  # Use GH_TOKEN secret here
 
     - name: Use Node.js ${{ matrix.node-version }}
       uses: actions/setup-node@v3
@@ -40,36 +33,28 @@ jobs:
 
     - run: npm install
     - run: npm test
+    - run: npm run lint
 
-    - name: Verify npm audit access
-      run: |
-        echo "Testing npm audit..."
-        npm audit --audit-level=high
+    - name: Run npm audit
+      run: npm audit --audit-level=high
       env:
-        GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
-
-    - name: Run lint
-      run: npm run lint
-
-    - name: Dependency Review
-      uses: github/dependency-review-action@v3
-      with:
-        token: ${{ secrets.GH_TOKEN }}
+        GH_TOKEN: ${{ secrets.GH_TOKEN }}  # Pass GH_TOKEN as an environment variable
 
     - name: Initialize CodeQL
       uses: github/codeql-action/init@v2
       with:
         languages: javascript
       env:
-        GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
+        GH_TOKEN: ${{ secrets.GH_TOKEN }}  # Pass GH_TOKEN as an environment variable
 
     - name: Autobuild
       uses: github/codeql-action/autobuild@v2
       env:
-        GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
+        GH_TOKEN: ${{ secrets.GH_TOKEN }}  # Pass GH_TOKEN as an environment variable
 
     - name: Perform CodeQL Analysis
       uses: github/codeql-action/analyze@v2
       env:
-        GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
+        GH_TOKEN: ${{ secrets.GH_TOKEN }}  # Pass GH_TOKEN as an environment variable
+
 
