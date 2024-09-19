@@ -2,12 +2,15 @@ name: Node.js CI
 
 on:
   push:
-    branches:
-      - main
+    branches: [ $default-branch, $protected-branches ]
   pull_request:
-    branches:
-      - main
-
+    branches: [ $default-branch ]
+  workflow_dispatch:
+permissions:
+  pull-requests: read
+  contents: read
+  issues: write
+  
 jobs:
   build:
 
