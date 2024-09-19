@@ -6,6 +6,7 @@ on:
   pull_request:
     branches: [ $default-branch ]
   workflow_dispatch:
+
 permissions:
   pull-requests: read
   contents: read
@@ -22,11 +23,47 @@ jobs:
 
     steps:
     - uses: actions/checkout@v4
+
     - name: Use Node.js ${{ matrix.node-version }}
-      uses: actions/setup-node@v2
+      uses: actions/setup-node@v3
       with:
         node-version: ${{ matrix.node-version }}
+
     - run: npm install
+    
+    # Run unit tests
     - run: npm test
+    
+    # Run ESLint for linting
     - run: npm run lint
 
+    # Run npm audit for security vulnerabilities in dependencies
+    - name: Check for vulnerabilities
+      run: npm audit --audit-level=high
+    
+    # Dependency Review action (built-in GitHub action)
+    - name: Dependency Review
+      uses: github/dependency-review-action@v2
+      with:
+        fail-on-severity: high
+
+  # CodeQL Analysis for multi-language static analysis
+  codeql-analysis:
+    runs-on: ubuntu-latest
+    permissions:
+      security-events: write
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+
+    - name: Initialize CodeQL
+      uses: github/codeql-action/init@v2
+      with:
+        languages: javascript  # Add more languages if your project supports them
+
+    - name: Autobuild
+      uses: github/codeql-action/autobuild@v2
+
+    - name: Perform CodeQL Analysis
+      uses: github/codeql-action/analyze@v2
