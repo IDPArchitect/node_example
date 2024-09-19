@@ -11,9 +11,8 @@ permissions:
   contents: write
   pull-requests: write
   issues: write
-  security-events: write
+  security-events: write  # Ensure security events write permission
   actions: read
-  code-scanning: write
 
 jobs:
   build:
