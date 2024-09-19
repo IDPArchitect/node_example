@@ -24,7 +24,7 @@ jobs:
     - name: Checkout repository
       uses: actions/checkout@v4
       with:
-        token: ${{ secrets.GH_TOKEN }}  # Use GH_TOKEN secret here
+        token: ${{ secrets.GH_TOKEN }}
 
     - name: Use Node.js ${{ matrix.node-version }}
       uses: actions/setup-node@v3
@@ -38,23 +38,28 @@ jobs:
     - name: Run npm audit
       run: npm audit --audit-level=high
       env:
-        GH_TOKEN: ${{ secrets.GH_TOKEN }}  # Pass GH_TOKEN as an environment variable
+        GH_TOKEN: ${{ secrets.GH_TOKEN }}
 
     - name: Initialize CodeQL
       uses: github/codeql-action/init@v2
       with:
         languages: javascript
       env:
-        GH_TOKEN: ${{ secrets.GH_TOKEN }}  # Pass GH_TOKEN as an environment variable
+        GH_TOKEN: ${{ secrets.GH_TOKEN }}
 
     - name: Autobuild
       uses: github/codeql-action/autobuild@v2
       env:
-        GH_TOKEN: ${{ secrets.GH_TOKEN }}  # Pass GH_TOKEN as an environment variable
+        GH_TOKEN: ${{ secrets.GH_TOKEN }}
 
     - name: Perform CodeQL Analysis
       uses: github/codeql-action/analyze@v2
       env:
-        GH_TOKEN: ${{ secrets.GH_TOKEN }}  # Pass GH_TOKEN as an environment variable
+        GH_TOKEN: ${{ secrets.GH_TOKEN }}
+
+    - name: Check SARIF file
+      run: |
+        ls -l /home/runner/work/node_example/results
+        cat /home/runner/work/node_example/results/javascript.sarif
 
 
