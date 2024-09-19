@@ -2,16 +2,16 @@ name: Node Project CI
 
 on:
   push:
-    branches: [ main ]  # Replace with your default branch name
+    branches: [ main ]
   pull_request:
-    branches: [ main ]  # Replace with your default branch name
+    branches: [ main ]
   workflow_dispatch:
 
 permissions:
   contents: write
   pull-requests: write
   issues: write
-  security-events: write  # Ensure security events write permission
+  security-events: write
   actions: read
 
 jobs:
@@ -40,6 +40,12 @@ jobs:
       run: npm audit --audit-level=high
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+    - name: Install security-check
+      run: npm install -g security-check
+
+    - name: Run security-check
+      run: security-check
 
     - name: Initialize CodeQL
       uses: github/codeql-action/init@v3
