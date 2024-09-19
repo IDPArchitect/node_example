@@ -41,9 +41,9 @@ jobs:
     - name: Check for vulnerabilities
       run: npm audit --audit-level=high
     
-    # Dependency Review action (built-in GitHub action)
+    # Dependency Review action (use v3 instead of v2)
     - name: Dependency Review
-      uses: github/dependency-review-action@v2
+      uses: github/dependency-review-action@v3
       with:
         fail-on-severity: high
 
