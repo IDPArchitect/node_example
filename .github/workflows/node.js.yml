@@ -2,17 +2,17 @@ name: Node Project CI
 
 on:
   push:
-    branches: [ $default-branch ]
+    branches: [ main ]  # Replace with your default branch name
   pull_request:
-    branches: [ $default-branch ]
+    branches: [ main ]  # Replace with your default branch name
   workflow_dispatch:
 
 permissions:
   contents: write
   pull-requests: write
   issues: write
-  security-events: write  # Ensure security events write permission
-  actions: read  # Ensure actions read permission
+  security-events: write
+  actions: read
   code-scanning: write
 
 jobs:
@@ -26,8 +26,6 @@ jobs:
     steps:
     - name: Checkout repository
       uses: actions/checkout@v3
-      with:
-        token: ${{ secrets.GITHUB_TOKEN }}  # Use GITHUB_TOKEN secret
 
     - name: Use Node.js ${{ matrix.node-version }}
       uses: actions/setup-node@v3
@@ -41,28 +39,26 @@ jobs:
     - name: Run npm audit
       run: npm audit --audit-level=high
       env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Pass GITHUB_TOKEN as an environment variable
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
     - name: Initialize CodeQL
       uses: github/codeql-action/init@v3
       with:
         languages: javascript
       env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Pass GITHUB_TOKEN as an environment variable
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
     - name: Autobuild
       uses: github/codeql-action/autobuild@v3
       env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Pass GITHUB_TOKEN as an environment variable
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
     - name: Perform CodeQL Analysis
       uses: github/codeql-action/analyze@v3
       env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Pass GITHUB_TOKEN as an environment variable
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
     - name: Check SARIF file
       run: |
         ls -l /home/runner/work/node_example/results
-        cat /home/runner/work/node_example/results/javascript.sarif
-
-
+        cat /home/runner/work/node_example/results/javascript.sarif || echo "SARIF file not found"
