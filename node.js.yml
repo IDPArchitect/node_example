@@ -11,7 +11,6 @@ permissions:
   contents: write
   pull-requests: write
   issues: write
-  security-events: write  # Ensure security events write permission
 
 jobs:
   build:
@@ -25,7 +24,7 @@ jobs:
     - name: Checkout repository
       uses: actions/checkout@v4
       with:
-        token: ${{ secrets.GITHUB_TOKEN }}  # Use GITHUB_TOKEN secret
+        token: ${{ secrets.GH_TOKEN }}
 
     - name: Use Node.js ${{ matrix.node-version }}
       uses: actions/setup-node@v3
@@ -39,24 +38,24 @@ jobs:
     - name: Run npm audit
       run: npm audit --audit-level=high
       env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Pass GITHUB_TOKEN as an environment variable
+        GH_TOKEN: ${{ secrets.GH_TOKEN }}
 
     - name: Initialize CodeQL
       uses: github/codeql-action/init@v2
       with:
         languages: javascript
       env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Pass GITHUB_TOKEN as an environment variable
+        GH_TOKEN: ${{ secrets.GH_TOKEN }}
 
     - name: Autobuild
       uses: github/codeql-action/autobuild@v2
       env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Pass GITHUB_TOKEN as an environment variable
+        GH_TOKEN: ${{ secrets.GH_TOKEN }}
 
     - name: Perform CodeQL Analysis
       uses: github/codeql-action/analyze@v2
       env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Pass GITHUB_TOKEN as an environment variable
+        GH_TOKEN: ${{ secrets.GH_TOKEN }}
 
     - name: Check SARIF file
       run: |
