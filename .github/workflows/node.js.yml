@@ -24,7 +24,7 @@ jobs:
     - name: Checkout repository
       uses: actions/checkout@v4
       with:
-        token: ${{ secrets.GH_TOKEN }}  # Ensure proper token usage
+        token: ${{ GH_TOKEN }}  # Ensure proper token usage
 
     - name: Use Node.js ${{ matrix.node-version }}
       uses: actions/setup-node@v3
@@ -41,7 +41,7 @@ jobs:
     - name: Dependency Review
       uses: github/dependency-review-action@v3
       with:
-        token: ${{ secrets.GH_TOKEN }}  # Ensure token is used if needed
+        token: ${{ GH_TOKEN }}  # Ensure token is used if needed
 
     - name: Initialize CodeQL
       uses: github/codeql-action/init@v2
