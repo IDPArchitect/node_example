@@ -13,7 +13,7 @@ permissions:
   issues: write
   security-events: write  # Ensure security events write permission
   actions: read  # Ensure actions read permission
-
+  code-scanning: write
 
 jobs:
   build:
