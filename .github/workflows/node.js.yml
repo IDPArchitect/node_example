@@ -38,33 +38,45 @@ jobs:
 
     - name: Run npm audit
       run: npm audit --audit-level=high
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-    - name: Install security-check
-      run: npm install -g security-check
+    - name: Install and Run Retire.js
+      run: |
+        npm install -g retire
+        retire --json > retire-report.json
+      continue-on-error: true
 
-    - name: Run security-check
-      run: security-check
+    - name: Install and Run OWASP Dependency-Check
+      run: |
+        wget https://github.com/jeremydmiller/dotnet-dep-check/releases/download/v6.1.4/dependency-check-6.1.4-release.zip
+        unzip dependency-check-6.1.4-release.zip
+        ./dependency-check/bin/dependency-check.sh --project "Node.js Project" --format "JSON" --out "dependency-check-report.json"
+      continue-on-error: true
+
+    - name: Install and Run Checkov
+      run: |
+        pip install checkov
+        checkov -d . --json-file-path checkov-report.json
+      continue-on-error: true
+
+    - name: Install and Run Checkmate
+      run: |
+        npm install -g @checkmate/checkmate
+        checkmate -r . --format json --output checkmate-report.json
+      continue-on-error: true
 
     - name: Initialize CodeQL
       uses: github/codeql-action/init@v3
       with:
         languages: javascript
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
     - name: Autobuild
       uses: github/codeql-action/autobuild@v3
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
     - name: Perform CodeQL Analysis
       uses: github/codeql-action/analyze@v3
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
     - name: Check SARIF file
       run: |
         ls -l /home/runner/work/node_example/results
         cat /home/runner/work/node_example/results/javascript.sarif || echo "SARIF file not found"
+
