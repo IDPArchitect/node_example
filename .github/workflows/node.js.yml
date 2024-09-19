@@ -42,7 +42,7 @@ jobs:
     - name: Install and Run Retire.js
       run: |
         npm install -g retire
-        retire --json > retire-report.json
+        retire > retire-report.txt
       continue-on-error: true
 
     - name: Install and Run OWASP Dependency-Check
@@ -55,13 +55,7 @@ jobs:
     - name: Install and Run Checkov
       run: |
         pip install checkov
-        checkov -d . --json-file-path checkov-report.json
-      continue-on-error: true
-
-    - name: Install and Run Checkmate
-      run: |
-        npm install -g @checkmate/checkmate
-        checkmate -r . --format json --output checkmate-report.json
+        checkov -d . --output-file checkov-report.json
       continue-on-error: true
 
     - name: Initialize CodeQL
@@ -79,4 +73,5 @@ jobs:
       run: |
         ls -l /home/runner/work/node_example/results
         cat /home/runner/work/node_example/results/javascript.sarif || echo "SARIF file not found"
+
 
